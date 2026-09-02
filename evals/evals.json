@@ -1,0 +1,41 @@
+{
+  "skill_name": "solid-principles",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Audita el diseño de evals/files/order-service.ts. Es un OrderService de checkout en TypeScript (Fastify + Prisma + Stripe + Resend + jsPDF). No me des teoría: quiero violaciones concretas con archivo y método, refactor mínimo en TS, y lo que NO debo extraer.",
+      "expected_output": "Auditoría con la plantilla del SKILL.md. Detecta al menos SRP (actores: fiscal/cupones, persistencia, pagos, email, PDF, HTTP) y DIP (PrismaClient, Stripe, Resend, FastifyRequest, jsPDF instanciados o importados en la clase). Propone partir por puertos (OrderRepository, PaymentGateway, MailNotifier, InvoiceRenderer) y un composition root. No propone una interface por cada método privado. Incluye 'Explícitamente NO recomendado' (p.ej. no envolver Date/Buffer, no IOrderServiceImpl). Severidad P1 en checkout/refund, no un checklist vacío de los cinco principios.",
+      "files": ["evals/files/order-service.ts"],
+      "expectations": [
+        "Usa la plantilla de auditoría SOLID (Resumen, Hallazgos, Lo que está bien, Explícitamente NO recomendado)",
+        "Nombra SRP con evidencia de métodos concretos (checkout, tax, email, PDF, persistencia)",
+        "Nombra DIP con evidencia de Prisma, Stripe, Resend o Fastify en la clase",
+        "Propone refactor mínimo en TypeScript con puertos, no un rewrite de todo el legacy",
+        "Declara costo y esfuerzo",
+        "Incluye al menos una abstracción que NO recomienda"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Estoy diseñando pagos en NestJS/TypeScript. Ya tengo Stripe y PayPal en producción. Producto quiere 'dejar listo' Adyen por si el año que viene lo contratamos. ¿Cómo estructuro las pasarelas con OCP y DIP? ¿Creo ya el adapter de Adyen?",
+      "expected_output": "Aplica OCP/DIP a Stripe y PayPal (puerto PaymentGateway, dos adapters, switch de creación en composition root/módulo Nest). Advierte explícitamente contra abstraer o implementar Adyen ahora: es especulativo. No genera IAdyenClient ni un tercer adapter vacío. Puede mencionar que el puerto se justifica porque YA hay dos implementaciones reales.",
+      "expectations": [
+        "Propone un puerto y adapters para Stripe y PayPal (implementaciones reales)",
+        "Rechaza implementar o diseñar el adapter de Adyen ahora",
+        "Explica que la segunda implementación real sí justifica el puerto",
+        "No inventa una jerarquía de clases de juguete (Shape/Animal)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Tengo un CRUD NestJS de 3 tablas (users, roles, settings), un solo admin interno, una sola base Prisma, sin tests de dominio todavía. ¿Le meto una interface a cada clase (IUserService, IUserRepository, IUserServiceImpl, etc.) para cumplir SOLID?",
+      "expected_output": "Dice que no. Explica interface bloat / abstracción especulativa, que DIP no aplica a concretos estables ni a una sola implementación sin eje de cambio, y que SRP no es una clase por función. Menciona críticas (costo > beneficio en código de baja tasa de cambio). No genera el andamiaje de interfaces.",
+      "expectations": [
+        "Responde que no debe poner una interface por clase",
+        "Nombra el anti-patrón (interface bloat o abstracción especulativa)",
+        "Relaciona la decisión con un solo actor / baja tasa de cambio o una sola implementación",
+        "No produce archivos IUserServiceImpl ni equivalentes"
+      ]
+    }
+  ]
+}
